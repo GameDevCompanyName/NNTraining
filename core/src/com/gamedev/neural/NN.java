@@ -117,10 +117,35 @@ public class NN {
 
         Random random = new Random();
 
-        for (Connection connection: ) {
-//идите нахуй я только начал
+        float[] weights = new float[connections.size()];
+
+        for (int i = 0; i < connections.size(); i++){
+            weights[i] = random.nextFloat() * 200 - 100;
         }
 
+        return weights;
+
+    }
+
+    public void setWeights(float[] weights){
+        int index = 0;
+        for (Connection connection: connections) {
+            connection.setWeight(weights[index]);
+            index++;
+        }
+    }
+
+    public float[] getWeights(){
+
+        float[] weights = new float[connections.size()];
+
+        int index = 0;
+        for (Connection connection: connections) {
+            weights[index] = connection.getWeight();
+            index++;
+        }
+
+        return weights;
 
     }
 

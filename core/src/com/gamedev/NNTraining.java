@@ -3,15 +3,16 @@ package com.gamedev;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.gamedev.neural.NN;
 import com.gamedev.objects.Ball;
 import com.gamedev.objects.GameBox;
@@ -30,12 +31,19 @@ public class NNTraining extends ApplicationAdapter {
     private World world;
     private OrthographicCamera camera;
     private Box2DDebugRenderer renderer;
+    private SpriteBatch labelBatch;
+
+    //private GeneticAlg geneticAlg;
+    private long startTime, endTime;
+
+    private Label label;
 
     private Body platform, ball, gameBox;
 
     @Override
     public void create() {
         skyNet = new NN();
+        skyNet.setWeights(skyNet.generateRandomWeights());
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 80f, 60f);
         renderer = new Box2DDebugRenderer();
@@ -43,7 +51,11 @@ public class NNTraining extends ApplicationAdapter {
 
         platform = Platform.create(world);
         ball = Ball.creat(world);
+        label = new Label("0", labelStyle());
+        label.setPosition(15, 530);
+        labelBatch = new SpriteBatch();
         gameBox = GameBox.creat(world);
+        startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -59,7 +71,12 @@ public class NNTraining extends ApplicationAdapter {
 
         world.step(1/60f, 6, 2);
         renderer.render(world, camera.combined);
+        labelBatch.begin();
+        label.setText(Long.toString((endTime - startTime)/100));
+        label.draw(labelBatch, 1.0f);
+        labelBatch.end();
         camera.update();
+        endTime = System.currentTimeMillis();
 
         if (ball.getPosition().y < 0){
             ball.setLinearVelocity(0,0);
@@ -67,6 +84,7 @@ public class NNTraining extends ApplicationAdapter {
             platform.setTransform(PLATFORM_START_POSITION_X, PLATFORM_START_POSITION_Y, 0);
             ball.setTransform(BALL_START_POSITION_X, BALL_START_POSITION_Y,0);
             start = false;
+            startTime = System.currentTimeMillis();
         }
 
         float decision = skyNet.think(platform.getPosition().x,
@@ -110,4 +128,18 @@ public class NNTraining extends ApplicationAdapter {
             platform.setTransform(platform.getPosition().x - PLATFORM_SPEED, platform.getPosition().y, 0);
         }
     }
+
+    private Label.LabelStyle labelStyle(){
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("captureit.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        p.color = Color.WHITE;
+        p.size = 70;
+        BitmapFont font = gen.generateFont(p);
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font;
+
+        return labelStyle;
+    }
+
 }

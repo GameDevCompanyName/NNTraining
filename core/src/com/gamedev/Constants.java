@@ -17,12 +17,12 @@ public class Constants {
 
     public static final float PLATFORM_HEIGHT = 0.8f;
     public static final float PLTFORM_WIDTH = 7.5f;
-    public static final float PLATFORM_SPEED = 1.0f;
+    public static final float PLATFORM_SPEED = 3.0f;
     public static final float PLATFORM_START_POSITION_X = 20;
     public static final float PLATFORM_START_POSITION_Y = 1.6f;
 
     public static final float BALL_RADIUS = 0.8f;
     public static final float BALL_START_POSITION_X = 20;
     public static final float BALL_START_POSITION_Y = 3.5f;
-    public static  float BALL_SPEED = 30f;
+    public static  float BALL_SPEED = 100f;
 }
