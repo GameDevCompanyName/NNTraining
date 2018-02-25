@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.gamedev.neural.NN;
 import com.gamedev.objects.Ball;
 import com.gamedev.objects.GameBox;
 import com.gamedev.objects.Platform;
@@ -24,6 +25,8 @@ public class NNTraining extends ApplicationAdapter {
     private static byte direction = 0;
     private static boolean start = false;
 
+    private NN skyNet;
+
     private World world;
     private OrthographicCamera camera;
     private Box2DDebugRenderer renderer;
@@ -32,6 +35,7 @@ public class NNTraining extends ApplicationAdapter {
 
     @Override
     public void create() {
+        skyNet = new NN();
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 80f, 60f);
         renderer = new Box2DDebugRenderer();
@@ -65,9 +69,23 @@ public class NNTraining extends ApplicationAdapter {
             start = false;
         }
 
+        float decision = skyNet.think(platform.getPosition().x,
+                ball.getPosition().x,
+                ball.getPosition().y,
+                ball.getLinearVelocity().x,
+                ball.getLinearVelocity().y);
+
+        if (decision > 0.2) direction = 1;
+        else
+            if (decision < -0.2) direction = -1;
+        else
+            direction = 0;
+
+        /*
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) direction = 1;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) direction = -1;
         if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) direction = 0;
+        */
 
         if (direction != 0) go();
     }

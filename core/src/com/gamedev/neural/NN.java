@@ -4,6 +4,7 @@ import com.gamedev.neural.Parts.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class NN {
 
@@ -110,6 +111,17 @@ public class NN {
         inputNeurons.get(3).changeState(ballSpeedX);
         inputNeurons.get(4).changeState(ballSpeedY);
         return outputNeuron.getValue();
+    }
+
+    public float[] generateRandomWeights(){
+
+        Random random = new Random();
+
+        for (Connection connection: ) {
+//идите нахуй я только начал
+        }
+
+
     }
 
 }
