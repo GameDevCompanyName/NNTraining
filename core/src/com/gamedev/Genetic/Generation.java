@@ -6,8 +6,8 @@ import java.util.*;
 
 public class Generation {
 
-    public static final int START_INDIVS = 10;
-    public static final int BEST_INDS = 3;
+    public static final int START_INDIVS = 100;
+    public static final int BEST_INDS = 6;
 
     public List<Individual> individuals;
     public Queue<Individual> indToTest;
@@ -79,6 +79,7 @@ public class Generation {
             for (int j = i+1; j < bestOfInds.length; j++){
                 newInds.addAll(Individual.cross(bestOfInds[i], bestOfInds[j]));
                 newInds.addAll(Individual.cross(bestOfInds[i], new Individual(nnet.generateRandomWeights())));
+                newInds.addAll(Individual.cross(new Individual(nnet.generateRandomWeights()), bestOfInds[j]));
             }
             bestOfInds[i].setFitness(null);
             newInds.add(bestOfInds[i]);

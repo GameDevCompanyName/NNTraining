@@ -113,7 +113,7 @@ public class NNTraining extends ApplicationAdapter {
     }
 
     public void indDied(){
-        Long fitness = (endTime - startTime)/20;
+        Long fitness = (endTime - startTime)/20 - (long) (Math.abs(platform.getPosition().x - ball.getPosition().x))/5;
         if (fitness > maxFitness){
             maxFitness = fitness;
             bestGenome = geneticAlg.getGenome();
