@@ -92,7 +92,7 @@ public class NNTraining extends ApplicationAdapter {
         }
 
         float decision = skyNet.think(platform.getPosition().x,
-                ball.getPosition().x,
+                ball.getPosition().x - platform.getPosition().x,
                 ball.getPosition().y,
                 ball.getLinearVelocity().x,
                 ball.getLinearVelocity().y);
