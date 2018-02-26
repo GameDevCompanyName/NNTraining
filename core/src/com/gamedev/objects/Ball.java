@@ -5,7 +5,6 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import static com.gamedev.Constants.*;
 import static com.gamedev.Constants.BALL_RADIUS;
-import static com.gamedev.Constants.CORRECT_IN_METERS_Y;
 
 public class Ball {
 

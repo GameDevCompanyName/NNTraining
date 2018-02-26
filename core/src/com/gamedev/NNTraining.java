@@ -2,9 +2,7 @@ package com.gamedev;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -13,10 +11,13 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.gamedev.Genetic.GeneticAlg;
 import com.gamedev.neural.NN;
 import com.gamedev.objects.Ball;
 import com.gamedev.objects.GameBox;
 import com.gamedev.objects.Platform;
+
+import java.util.Arrays;
 
 import static com.gamedev.Constants.*;
 import static com.gamedev.Constants.PLATFORM_START_POSITION_Y;
@@ -33,7 +34,12 @@ public class NNTraining extends ApplicationAdapter {
     private Box2DDebugRenderer renderer;
     private SpriteBatch labelBatch;
 
-    //private GeneticAlg geneticAlg;
+    private int counter = 1;
+
+    private Long maxFitness = 0l;
+    private float[] bestGenome = new float[21];
+
+    private GeneticAlg geneticAlg;
     private long startTime, endTime;
 
     private Label label;
@@ -45,17 +51,18 @@ public class NNTraining extends ApplicationAdapter {
         skyNet = new NN();
         skyNet.setWeights(skyNet.generateRandomWeights());
         camera = new OrthographicCamera();
-        camera.setToOrtho(false, 80f, 60f);
+        camera.setToOrtho(false, 8f, 6f);
         renderer = new Box2DDebugRenderer();
         world = new World(new Vector2(0, 0), true);
 
         platform = Platform.create(world);
         ball = Ball.creat(world);
         label = new Label("0", labelStyle());
-        label.setPosition(15, 530);
+        label.setPosition(15, 550);
         labelBatch = new SpriteBatch();
         gameBox = GameBox.creat(world);
         startTime = System.currentTimeMillis();
+        geneticAlg = new GeneticAlg(this, skyNet);
     }
 
     @Override
@@ -72,19 +79,16 @@ public class NNTraining extends ApplicationAdapter {
         world.step(1/60f, 6, 2);
         renderer.render(world, camera.combined);
         labelBatch.begin();
-        label.setText(Long.toString((endTime - startTime)/100));
+        label.setText(Long.toString((endTime - startTime)/100) + " (" + geneticAlg.getGeneration() + " gen)" +
+        "\nINDS: " + geneticAlg.getLeft() + "/" + geneticAlg.getQuantity() +
+                "\nID = " + geneticAlg.getID());
         label.draw(labelBatch, 1.0f);
         labelBatch.end();
         camera.update();
         endTime = System.currentTimeMillis();
 
         if (ball.getPosition().y < 0){
-            ball.setLinearVelocity(0,0);
-            direction = 0;
-            platform.setTransform(PLATFORM_START_POSITION_X, PLATFORM_START_POSITION_Y, 0);
-            ball.setTransform(BALL_START_POSITION_X, BALL_START_POSITION_Y,0);
-            start = false;
-            startTime = System.currentTimeMillis();
+            indDied();
         }
 
         float decision = skyNet.think(platform.getPosition().x,
@@ -108,10 +112,30 @@ public class NNTraining extends ApplicationAdapter {
         if (direction != 0) go();
     }
 
+    public void indDied(){
+        Long fitness = (endTime - startTime)/20;
+        if (fitness > maxFitness){
+            maxFitness = fitness;
+            bestGenome = geneticAlg.getGenome();
+        }
+        System.out.println("--------------");
+        System.out.println("Тест: " + counter);
+        System.out.println("Геном: " + Arrays.toString(geneticAlg.getGenome()));
+        System.out.println("Fitness: " + fitness);
+        System.out.println("!!!BEST: " + maxFitness);
+        System.out.println("BEST_Геном: " + Arrays.toString(bestGenome));
+        counter++;
+        geneticAlg.individFailed(fitness);
+    }
+
     @Override
     public void dispose() {
         renderer.dispose();
         world.dispose();
+    }
+
+    public void setNewNN(float[] weights){
+        skyNet.setWeights(weights);
     }
 
     private void go(){
@@ -133,7 +157,7 @@ public class NNTraining extends ApplicationAdapter {
         FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("captureit.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
         p.color = Color.WHITE;
-        p.size = 70;
+        p.size = 15;
         BitmapFont font = gen.generateFont(p);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -142,4 +166,12 @@ public class NNTraining extends ApplicationAdapter {
         return labelStyle;
     }
 
+    public void replay() {
+        ball.setLinearVelocity(0,0);
+        direction = 0;
+        platform.setTransform(PLATFORM_START_POSITION_X, PLATFORM_START_POSITION_Y, 0);
+        ball.setTransform(BALL_START_POSITION_X, BALL_START_POSITION_Y,0);
+        start = false;
+        startTime = System.currentTimeMillis();
+    }
 }
