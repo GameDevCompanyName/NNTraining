@@ -23,7 +23,7 @@ public class Test {
             float val5 = random.nextFloat() * 10000 - 5000;
             System.out.println("---------");
             System.out.println("Values: " + val1 + "  " + val2 + "  " + val3 + "  " + val4 + "  " + val5);
-            float think = nnet.think(val1,val2,val3,val4,val5);
+            float think = nnet.think(val2,val3,val4,val5);
             sumOfAll += think;
             if (think < min)
                 min = think;

@@ -8,8 +8,8 @@ import java.util.Random;
 
 public class NN {
 
-    public static final int INPUT_NEURONS = 5;
-    public static final int HIDDEN_NEURONS = 3;
+    public static final int INPUT_NEURONS = 4;
+    public static final int HIDDEN_NEURONS = 4;
 
     private List<InputNeuron> inputNeurons;
     private SdvigNeuron sdvigNeuron;
@@ -104,12 +104,11 @@ public class NN {
 
     }
 
-    public float think(float plateX, float ballX, float ballY, float ballSpeedX, float ballSpeedY){
-        inputNeurons.get(0).changeState(plateX);
-        inputNeurons.get(1).changeState(ballX);
-        inputNeurons.get(2).changeState(ballY);
-        inputNeurons.get(3).changeState(ballSpeedX);
-        inputNeurons.get(4).changeState(ballSpeedY);
+    public float think(float X, float ballY, float ballSpeedX, float ballSpeedY){
+        inputNeurons.get(0).changeState(X);
+        inputNeurons.get(1).changeState(ballY);
+        inputNeurons.get(2).changeState(ballSpeedX);
+        inputNeurons.get(3).changeState(ballSpeedY);
         return outputNeuron.getValue();
     }
 

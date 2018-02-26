@@ -2,6 +2,7 @@ package com.gamedev;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -91,8 +92,7 @@ public class NNTraining extends ApplicationAdapter {
             indDied();
         }
 
-        float decision = skyNet.think(platform.getPosition().x,
-                ball.getPosition().x - platform.getPosition().x,
+        float decision = skyNet.think(ball.getPosition().x - platform.getPosition().x,
                 ball.getPosition().y,
                 ball.getLinearVelocity().x,
                 ball.getLinearVelocity().y);
@@ -108,7 +108,6 @@ public class NNTraining extends ApplicationAdapter {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) direction = -1;
         if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) direction = 0;
         */
-
         if (direction != 0) go();
     }
 
