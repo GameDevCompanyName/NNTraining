@@ -22,7 +22,7 @@ public class Ball {
         fDef.shape = shape;
         fDef.restitution = 1;
         fDef.friction = 0;
-        ball.createFixture(fDef);
+        ball.createFixture(fDef).setUserData("BALL");
         shape.dispose();
 
         return ball;

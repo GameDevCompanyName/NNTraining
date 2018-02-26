@@ -25,6 +25,8 @@ import static com.gamedev.Constants.PLATFORM_START_POSITION_Y;
 
 public class NNTraining extends ApplicationAdapter {
 
+    private static final float MAXBOUNCEANGLE = 0.5f;
+
     private static byte direction = 0;
     private static boolean start = false;
 
@@ -44,6 +46,7 @@ public class NNTraining extends ApplicationAdapter {
     private long startTime, endTime;
 
     private Label label;
+    private NNContactListener contactListener;
 
     private Body platform, ball, gameBox;
 
@@ -55,6 +58,8 @@ public class NNTraining extends ApplicationAdapter {
         camera.setToOrtho(false, 8f, 6f);
         renderer = new Box2DDebugRenderer();
         world = new World(new Vector2(0, 0), true);
+        contactListener = new NNContactListener(this);
+        world.setContactListener(contactListener);
 
         platform = Platform.create(world);
         ball = Ball.creat(world);
@@ -92,27 +97,43 @@ public class NNTraining extends ApplicationAdapter {
             indDied();
         }
 
+
+
         float decision = skyNet.think(ball.getPosition().x - platform.getPosition().x,
                 ball.getPosition().y,
                 ball.getLinearVelocity().x,
                 ball.getLinearVelocity().y);
 
-        if (decision > 0.01) direction = 1;
+        if (decision > 0.4) direction = 1;
         else
-            if (decision < -0.01) direction = -1;
+            if (decision < -0.4) direction = -1;
         else
             direction = 0;
 
-        /*
+        if (Gdx.input.isKeyJustPressed((Input.Keys.L))){
+            Constants.BALL_SPEED /= 2;
+            ball.setLinearVelocity(ball.getLinearVelocity().x/2, ball.getLinearVelocity().y/2);
+            Constants.PLATFORM_SPEED /=2;
+        }
+
+        if (Gdx.input.isKeyJustPressed((Input.Keys.F))){
+            Constants.BALL_SPEED *= 2;
+            ball.setLinearVelocity(ball.getLinearVelocity().x*2, ball.getLinearVelocity().y*2);
+            Constants.PLATFORM_SPEED *=2;
+        }
+
+
+
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) direction = 1;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) direction = -1;
         if (Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) direction = 0;
-        */
+
+
         if (direction != 0) go();
     }
 
     public void indDied(){
-        Long fitness = (endTime - startTime)/20 - (long) (Math.abs(platform.getPosition().x - ball.getPosition().x))/2;
+        Long fitness = contactListener.getCounter()*20 - (long) (Math.abs(platform.getPosition().x - ball.getPosition().x));
         if (fitness > maxFitness){
             maxFitness = fitness;
             bestGenome = geneticAlg.getGenome();
@@ -138,11 +159,11 @@ public class NNTraining extends ApplicationAdapter {
     }
 
     private void go(){
-        if (platform.getPosition().x > 80 - PLTFORM_WIDTH) {
-            platform.setTransform(80 - PLTFORM_WIDTH, platform.getPosition().y, 0);
+        if (platform.getPosition().x > Constants.CAMERA_WIDTH - PLATFORM_WIDTH) {
+            platform.setTransform(Constants.CAMERA_WIDTH - PLATFORM_WIDTH, platform.getPosition().y, 0);
         }
-        if (platform.getPosition().x < 0 + PLTFORM_WIDTH) {
-            platform.setTransform(0 + PLTFORM_WIDTH, platform.getPosition().y, 0);
+        if (platform.getPosition().x < 0 + PLATFORM_WIDTH) {
+            platform.setTransform(0 + PLATFORM_WIDTH, platform.getPosition().y, 0);
         }
         if (direction == 1){
             platform.setTransform(platform.getPosition().x + PLATFORM_SPEED, platform.getPosition().y, 0);
@@ -153,7 +174,7 @@ public class NNTraining extends ApplicationAdapter {
     }
 
     private Label.LabelStyle labelStyle(){
-        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/captureit.ttf"));
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("captureit.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
         p.color = Color.WHITE;
         p.size = 15;
@@ -171,6 +192,15 @@ public class NNTraining extends ApplicationAdapter {
         platform.setTransform(PLATFORM_START_POSITION_X, PLATFORM_START_POSITION_Y, 0);
         ball.setTransform(BALL_START_POSITION_X, BALL_START_POSITION_Y,0);
         start = false;
-        startTime = System.currentTimeMillis();
+        contactListener.zeroCounter();
     }
+
+    public void correctBall() {
+        float relativeIntersectY = (platform.getPosition().x+(PLATFORM_WIDTH/2)) - ball.getPosition().x;
+        float normalizedRelativeIntersectionY = (relativeIntersectY/(PLATFORM_WIDTH/2));
+        float bounceAngle = normalizedRelativeIntersectionY * MAXBOUNCEANGLE;
+        ball.setLinearVelocity((float) (BALL_SPEED * 1.5 * Math.cos(bounceAngle)),
+                (float) (BALL_SPEED * 1.5 * -Math.sin(bounceAngle)));
+    }
+
 }

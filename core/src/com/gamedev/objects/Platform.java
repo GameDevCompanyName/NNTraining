@@ -18,9 +18,10 @@ public class Platform {
 
         FixtureDef fDef = new FixtureDef();
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(PLTFORM_WIDTH, PLATFORM_HEIGHT);
+        shape.setAsBox(PLATFORM_WIDTH, PLATFORM_HEIGHT);
         fDef.shape = shape;
-        platform.createFixture(fDef);
+
+        platform.createFixture(fDef).setUserData("PLATFORM");
         shape.dispose();
 
 
@@ -34,11 +35,11 @@ public class Platform {
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             body.setTransform(body.getPosition().x - PLATFORM_SPEED, body.getPosition().y, 0);
         }
-        if (body.getPosition().x > 80 - PLTFORM_WIDTH) {
-            body.setTransform(80 - PLTFORM_WIDTH, body.getPosition().y, 0);
+        if (body.getPosition().x > 80 - PLATFORM_WIDTH) {
+            body.setTransform(80 - PLATFORM_WIDTH, body.getPosition().y, 0);
         }
-        if (body.getPosition().x < 0 + PLTFORM_WIDTH) {
-            body.setTransform(0 + PLTFORM_WIDTH, body.getPosition().y, 0);
+        if (body.getPosition().x < 0 + PLATFORM_WIDTH) {
+            body.setTransform(0 + PLATFORM_WIDTH, body.getPosition().y, 0);
         }
     }
 }

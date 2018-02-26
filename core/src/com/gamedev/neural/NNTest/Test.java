@@ -13,14 +13,14 @@ public class Test {
         float min = Float.MAX_VALUE;
         float max = Float.MIN_VALUE;
         float sumOfAll = 0;
-        int numberOfTests = 100000;
+        int numberOfTests = 10000;
 
         for (int i = 0; i < numberOfTests; i++){
-            float val1 = random.nextFloat() * 10000 - 5000;
-            float val2 = random.nextFloat() * 10000 - 5000;
-            float val3 = random.nextFloat() * 10000 - 5000;
-            float val4 = random.nextFloat() * 10000 - 5000;
-            float val5 = random.nextFloat() * 10000 - 5000;
+            float val1 = random.nextFloat() * 1000 - 500;
+            float val2 = random.nextFloat() * 1000 - 500;
+            float val3 = random.nextFloat() * 1000 - 500;
+            float val4 = random.nextFloat() * 1000 - 500;
+            float val5 = random.nextFloat() * 1000 - 500;
             System.out.println("---------");
             System.out.println("Values: " + val1 + "  " + val2 + "  " + val3 + "  " + val4 + "  " + val5);
             float think = nnet.think(val2,val3,val4,val5);
