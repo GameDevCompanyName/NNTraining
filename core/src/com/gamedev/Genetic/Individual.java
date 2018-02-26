@@ -54,12 +54,12 @@ public class Individual {
             if (random.nextBoolean())
                 newCrom3[i] = i1.chromosome[i];
             else
-                newCrom3[i] = random.nextFloat()*200-100;
+                newCrom3[i] = (i1.chromosome[i] + random.nextFloat()*200-100)/2;
 
             if (random.nextBoolean())
                 newCrom4[i] = i2.chromosome[i];
             else
-                newCrom4[i] = random.nextFloat()*200-100;
+                newCrom4[i] = (i2.chromosome[i] + random.nextFloat()*200-100)/2;
 
         }
 

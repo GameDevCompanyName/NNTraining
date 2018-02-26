@@ -97,9 +97,9 @@ public class NNTraining extends ApplicationAdapter {
                 ball.getLinearVelocity().x,
                 ball.getLinearVelocity().y);
 
-        if (decision > 0.2) direction = 1;
+        if (decision > 0.01) direction = 1;
         else
-            if (decision < -0.2) direction = -1;
+            if (decision < -0.01) direction = -1;
         else
             direction = 0;
 
@@ -113,7 +113,7 @@ public class NNTraining extends ApplicationAdapter {
     }
 
     public void indDied(){
-        Long fitness = (endTime - startTime)/20 - (long) (Math.abs(platform.getPosition().x - ball.getPosition().x))/5;
+        Long fitness = (endTime - startTime)/20 - (long) (Math.abs(platform.getPosition().x - ball.getPosition().x))/2;
         if (fitness > maxFitness){
             maxFitness = fitness;
             bestGenome = geneticAlg.getGenome();
@@ -154,7 +154,7 @@ public class NNTraining extends ApplicationAdapter {
     }
 
     private Label.LabelStyle labelStyle(){
-        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("captureit.ttf"));
+        FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("core/assets/captureit.ttf"));
         FreeTypeFontGenerator.FreeTypeFontParameter p = new FreeTypeFontGenerator.FreeTypeFontParameter();
         p.color = Color.WHITE;
         p.size = 15;
